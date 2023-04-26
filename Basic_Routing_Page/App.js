@@ -5,6 +5,7 @@ const app = express() //creates a new express application
 //Connect to mongoDB
 const mongoose = require('mongoose')
 
+//Key from mongoDB
 const dbURI = 'mongodb+srv://testUser:test1234@mern.kfn22jx.mongodb.net/node-tuts'
 mongoose.connect(dbURI)
     .then((res)=>{
@@ -15,7 +16,7 @@ mongoose.connect(dbURI)
     })
     .catch((err)=> console.log(err))
 
-//Import Schema/Models
+//Import Schema/Models from Mongoose = ODM (Object document mapping library)
 const Blog = require('./models/blog')
 
 //Middleware
