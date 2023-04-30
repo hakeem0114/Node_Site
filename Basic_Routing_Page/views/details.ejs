@@ -1,0 +1,46 @@
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+
+<body>
+  <%- include("./partials/nav.ejs") %>
+
+  <div class="details content">
+    <h2><%= blog.title %></h2>
+    <div class="content">
+      <p>Blog Body = <%= blog.body %></p>
+      
+      <i>Blog Page ID = <%= blog._id %><i>
+    </div>
+    
+    <a class="delete" data-doc="<%= blog._id %>">delete</a>
+
+    <a class="update" data-doc="<%= blog._id %>">update</a>
+  </div>
+
+  <%- include("./partials/footer.ejs") %>
+
+  <script>
+    const trashcan = document.querySelector('a.delete'); //Get delete class inside a tag
+
+    trashcan.addEventListener('click', (e) => {
+      const endpoint = `/blogs/${trashcan.dataset.doc} `; 
+
+      //AJAX requests from vanilla JS to backend needs to be a JSON object
+      //Send delete request for that id = endpoint
+    fetch(endpoint, {  //Get JSON data & parse to it JS object. Use id & redirect url from backend
+        method: 'DELETE',
+      })
+      .then(response => response.json()) 
+
+      .then(data => window.location.href = data.redirect) //After response is processed, redirect to '/blogs'
+      .catch(err => console.log(err));
+    });
+
+
+    //Update 
+    
+
+    
+  </script>
+</body>
+</html>
