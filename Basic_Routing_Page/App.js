@@ -2,6 +2,9 @@
 const express = require('express')//Node framework for routing & managing server requests & responses
 const app = express() //creates a new express application
 
+//Re-import routes
+const blogRoutes = require('./routes/blogRoutes')
+
 //Connect to mongoDB
 const mongoose = require('mongoose')
 
@@ -16,8 +19,7 @@ mongoose.connect(dbURI)
     })
     .catch((err)=> console.log(err))
 
-//Import Schema/Models from Mongoose = ODM (Object document mapping library)
-const Blog = require('./models/blog')
+//Blog models moved to route handlers
 
 //Middleware
 const morgan = require('morgan') //HTTP request logger middleware for node.js
@@ -112,73 +114,8 @@ app.get('/about',(req,res)=>{ //Get about.ejs view
 
 
 //BLOG ROUTES
-    //GET 
-app.get('/blogs', (req, res)=>{
-    Blog.find().sort({createdAt: -1 }) 
-    //createdAt & updatedAt are timestampes created by MongoDB (set to true in ./models/blog.js)
-    //-1 lets it sort in descending order
-        .then((result)=>{
-
-            //Render using view engine (EJS)
-            res.render('index', {title: 'All Blogs', blogs: result })
-        })
-        .catch((err)=>{
-            console.log(err)
-        })
-})
-
-app.get('/blogs/create',(req, res)=>{
-    res.render('create', {title: 'Create a new blog'})
-})
-
-    //Post
-app.post('/blogs', (req, res)=>{ //request, response
-    //Use express middleware to convert create.ejs url encoded data & passes into a usable object in req.body or req.body, req.title, ...
-    console.log(req.body)
-    const blog = new Blog(req.body) //Create new instance of a blog's schema to store on database
-
-    blog.save() //Save to database
-        .then((result)=>{
-            //After user POSTs request, redirect them to blogs page to see their submitted data
-            console.log('**Result after saving request to database is')
-            console.log(result) //Puts the req.body into schema & also save the timestamps to MongoDB
-            res.redirect('/blogs') //Redirect to homepage
-        })
-        .catch((err)=>{
-            console.log(err)
-        })
-
-})
-
-    //Get Route Parameter = id
-app.get('/blogs/:id', (request, response)=>{
-    const id = request.params.id  //if you used :item, it would be .params.item
-    console.log(`blog id = ${id}`)
-
-    Blog.findById(id)
-        .then(result=>{
-            response.render('details',{blog: result, title:'Blog Details'}) //Send objects to details.ejs
-        })
-        .catch((err)=>{
-            console.log(err)
-        })
-
-})
-
-    //Delete using id
-    app.delete('/blogs/:id', (req, response) => {
-        const id = req.params.id;
-        
-        Blog.findByIdAndDelete(id)
-          .then(result => { //result => {JSON ID & redirect path object }
-            response.json({ redirect: '/blogs' });
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      });
-
-
+    //in ./routes/blogRoutes.js
+    app.use('/blogs',blogRoutes) //Only make blogRoutes available to ..../blogs
       
 
 //404 Page
